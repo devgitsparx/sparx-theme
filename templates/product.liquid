@@ -1,0 +1,148 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+{% liquid
+   assign selectedColor = "" 
+   for option in product.options_with_values 
+     assign optName = option.name | downcase 
+     if optName == 'color' 
+       for value in option.values 
+         for val in product.selected_or_first_available_variant.options 
+             if value == val  
+              assign selectedColor = value 
+             endif 
+         endfor 
+       endfor 
+     endif 
+   endfor 
+%}
+<div class="wrapper-product">
+  <div class="image-wrapper">
+    <div class="swiper">
+      <div class="swiper-wrapper">
+        {% for media in product.media %}
+          {% if media.alt == selectedColor %}
+            {% render 'media', media: media %}
+          {% endif %}
+        {% endfor %}
+
+      </div>
+
+    </div>
+
+    <div class="swiper-thumbs">
+      <div class="swiper-wrapper">
+        {% for media in product.media %}
+          {% if media.alt == selectedColor %}
+            {% render 'media', media: media %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="details-wrapper">
+    <h1 class="product-title">{{ product.title }}</h1>
+    <div class="product-description">
+      {{ product.description }}
+    </div>
+    {% render 'price' %}
+
+
+      {% form 'product', product %}
+      <p>Quantity</p>
+
+
+      <div class="input-group">
+        <input
+          type="button"
+          value="-"
+          class="button-minus"
+          data-field="quantity">
+        <input
+          type="number"
+          name="quantity"
+          value="1"
+          min-value="1"
+          class="quantity-field">
+        <input
+          type="button"
+          value="+"
+          class="button-plus"
+          data-field="quantity">
+      </div>
+
+
+      <!-- Master Select -->
+      <select id="product-select" name="id">
+        {% for variant in product.variants %}
+          <option value="{{ variant.id }}" {% if variant == product.selected_or_first_available_variant %}selected="selected"{% endif %}>
+            {{ variant.title }} - {{ variant.price | money }}
+          </option>
+        {% endfor %}
+      </select>
+
+
+      <!--   Radio Button Swatches -->
+      <div class="radio-swatch-main">
+        {%- unless product.has_only_default_variant -%}
+          {%- for option in product.options_with_values -%}
+
+            {% if option.name == "Color" %}
+              <p>{{ option.name }}
+              </p>
+              <div class="color-swatches">
+                {%- for value in option.values -%}
+
+
+                  <input
+                    type="radio"
+                    {% if option.selected_value == value %}checked{% endif %}
+                    id="{{ option.name | handleize }}-{{ value | handleize }}"
+                    value="{{ value | escape }}"
+                    name="{{ option.name | handleize }}">
+                  <div>
+                    <label for="{{ option.name | handleize }}-{{ value | handleize }}">
+                      <span class="swatch" style="background-color: {{ value }}"></span>
+                      <!-- Add this line -->
+
+                    </label>
+                  </div>
+
+                {%- endfor -%}
+              </div>
+            {% else %}
+              <p>{{ option.name }}
+              </p>
+
+              {%- for value in option.values -%}
+
+
+                <input
+                  type="radio"
+                  {% if option.selected_value == value %}checked{% endif %}
+                  value="{{ value | escape }}"
+                  id="{{ option.name | handleize }}-{{ value | handleize }}"
+                  name="{{ option.name | handleize }}">
+
+                <label for="{{ option.name | handleize }}-{{ value | handleize }}">
+                  {{ value | escape }}
+                </label>
+              {%- endfor -%}
+            {% endif %}
+
+
+
+          {%- endfor -%}
+        {%- endunless -%}
+      </div>
+
+
+
+      <input
+        class="atc-button"
+        type="submit"
+        value="ADD TO CART"></div>
+  </div>
+{% endform %}
+{% comment %} 
+Media Updated
+{% endcomment %}

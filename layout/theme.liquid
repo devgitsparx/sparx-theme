@@ -1,11 +1,414 @@
 <html>
-  <head>
-
-    {{ content_for_header }}
-  </head>
-  <body>
-    {{ content_for_layout }}
+<head>
+{{ 'option_selection.js' | shopify_asset_url | script_tag }}
 
 
-  </body>
+
+  
+{{content_for_header}}
+
+</head>
+
+
+<style>
+
+  body{
+font-family: Arial, Helvetica, sans-serif;  }
+
+  #product-select{
+    display:none !important;
+  }
+
+  .color-swatches{
+    display: flex;
+
+  }
+  .price-flex {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}
+
+  .radio-swatch-main label{
+    border: 2px solid black;
+    padding: 10px;
+    margin-right: 10px
+  }
+  .radio-swatch-main p{
+    margin-top:30px;
+  }
+
+  
+    .color-swatches .swatch {
+    display: inline-block;
+    width: 35px;
+    height: 35px;
+}
+
+  .color-swatches label{
+    border:none;
+  }
+
+
+  .color-swatches input:checked + div label {
+    border: 0.5px solid #000;
+    padding: 0px;
+    height: 100%;
+    display: block;
+    padding: 4px;
+    margin-bottom: 0px;
+    box-sizing: border-box;
+}
+ 
+   .color-swatches .swatch {
+    display: inline-block;
+    width: 35px;
+    height: 25px;
+    margin-top: 5px;
+}
+
+.color-swatches input:checked + div label .swatch{
+  height:25px !important;
+  margin-top: 0px;
+}
+  .color-swatches label{
+    padding:0;
+  }
+.product-description{
+  margin-bottom:20px;
+  font-weight:600;
+}
+  h1.product-title {
+    margin-top: 50px;
+    margin-bottom: 10px;
+}
+.product-price{
+  font-size: 30;
+    font-weight: bold;
+    margin-top: 0;
+}
+  .compare-at-price{
+ font-size: 20px;
+    font-weight: 400;
+    margin-top: -10px;
+    text-decoration: line-through;
+    margin-left: 20px;
+    color: gray;
+}
+
+  .radio-swatch-main input{
+    position: fixed;
+opacity: 0;
+pointer-events: none;
+  }
+  .atc-button{
+    display: block;
+    width: 100%;
+    height: 50px;
+    margin-top: 40px;
+    background: black;
+    color: white;
+    outline: 0;
+    border: 0;
+  }
+
+.atc-button:disabled{
+  background:#0000007d
+}
+  
+  .selector-wrapper{
+    display:none !important;
+  }
+   
+/*     [data-media-alt]{
+      display:none;
+    } */
+    .swiper{
+      height:400px
+    }
+  .product-single__media{
+    display:inline-block;
+  }
+.swiper-wrapper{
+/*   transform:none !important; */
+}
+  .swiper-thumbs{
+     width: 100%;
+        padding: 0;
+        overflow: hidden;
+    height:100px !important;
+  }
+  .swiper-thumbs img{
+    width: auto;
+                height: 100%;
+  }
+
+  .swiper-thumbs .swiper-slide {
+/*     width: 100px !important; */
+            height: 100px;
+            text-align: center;
+            overflow: hidden;
+            opacity: 1;
+  }
+.ofs-text{
+  color:red;
+  font-weight:bold;
+}
+  .input-group {
+  clear: both;
+  margin: 15px 0;
+  position: relative;
+}
+
+.input-group input[type='button'] {
+/*   background-color: #eeeeee; */
+  min-width: 38px;
+  width: auto;
+  transition: all 300ms ease;
+}
+
+.input-group .button-minus,
+.input-group .button-plus {
+  font-weight: bold;
+  height: 38px;
+  padding: 0;
+  width: 38px;
+  position: relative;
+}
+
+.input-group .quantity-field {
+  position: relative;
+  height: 38px;
+  left: -6px;
+  text-align: center;
+  width: 62px;
+  display: inline-block;
+  font-size: 13px;
+  margin: 0 0 5px;
+  resize: vertical;
+}
+
+.button-plus {
+  left: -13px;
+}
+
+.radio-swatch-main input:checked + label {
+
+background:black;
+  color:white;
+}
+  
+@media(min-width:786px){
+  .image-wrapper{
+    width:50%;
+  }
+  .wrapper-product{
+    display:flex;
+  }
+  .swiper-slide {
+
+    display: flex !important;
+    align-items: center;
+    justify-content: center !important;
+}
+}
+  
+</style>
+
+  
+<body>
+{{content_for_layout}}
+  <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+
+
+
+<!--   Media Slider with Master Selector -->
+  
+<script>
+
+// Initialize the Swiper
+var thumbs = new Swiper ('.swiper-thumbs', {
+    loop: true,
+    slidesPerView: 4,
+    slideToClickedSlide: true,
+  loop:true,
+    thumbs: {
+      swiper: swiper
+    }
+});
+  
+var swiper = new Swiper('.swiper', {
+ slidesPerView: 1,
+    centeredSlides: true,
+    loop: true,
+    thumbs: {
+      swiper: thumbs
+    }
+});
+// swiper.controller.control = thumbs;
+//   thumbs.controller.control = swiper;
+
+
+  // Quantity Increment or Decrement
+
+  function incrementValue(e) {
+  e.preventDefault();
+  var fieldName = e.target.getAttribute('data-field');
+  var parent = e.target.closest('div');
+  var currentVal = parseInt(parent.querySelector('input[name="' + fieldName + '"]').value, 10);
+
+  if (!isNaN(currentVal)) {
+    parent.querySelector('input[name="' + fieldName + '"]').value = currentVal + 1;
+  } else {
+    parent.querySelector('input[name="' + fieldName + '"]').value = 0;
+  }
+}
+
+function decrementValue(e) {
+  e.preventDefault();
+  var fieldName = e.target.getAttribute('data-field');
+  var parent = e.target.closest('div');
+  var currentVal = parseInt(parent.querySelector('input[name="' + fieldName + '"]').value, 10);
+
+  if (!isNaN(currentVal) && currentVal > 0) {
+    parent.querySelector('input[name="' + fieldName + '"]').value = currentVal - 1;
+  } else {
+    parent.querySelector('input[name="' + fieldName + '"]').value = 0;
+  }
+}
+
+document.querySelectorAll('.input-group').forEach(function (group) {
+  group.addEventListener('click', function (e) {
+    if (e.target.classList.contains('button-plus')) {
+      incrementValue(e);
+    } else if (e.target.classList.contains('button-minus')) {
+      decrementValue(e);
+    }
+  });
+});
+
+  
+</script>
+<script>
+  var selectCallback = function(variant, selector) { 
+    
+}
+  new Shopify.OptionSelectors('product-select', {
+  product: {{ product | json }},
+  onVariantSelected: selectCallback,
+  enableHistoryState: true
+});
+
+
+  // Radio Swatches Functionality
+
+
+var product = {{product | json}};
+
+document.querySelectorAll(".radio-swatch-main input[type='radio']").forEach(radio => {
+  
+  radio.addEventListener("change", () => {
+    var selectedOptions = [];
+    console.log(selectedOptions);
+
+    document.querySelectorAll(".radio-swatch-main input[type='radio']").forEach(radio => {
+      radio.classList.remove("checked");
+      if (radio.checked) {
+        selectedOptions.push(radio.value);
+        radio.classList.add("checked");
+      }
+    });
+
+    var matchedVariant = product.variants.find(variant => {
+      var pass = true;
+      for (var i = 0; i < selectedOptions.length; i++) {
+        if (selectedOptions.indexOf(variant.options[i]) === -1) {
+          pass = false;
+          break;
+        }
+      }
+      return pass;
+    });
+
+    console.log(matchedVariant);
+
+
+      
+      // Price Update on Variant Change
+document.querySelector(".product-price").innerHTML = 'Rs.' + matchedVariant.price / 100;
+
+
+      
+      // Compare at Price Update on Variant Change
+document.querySelector(".compare-at-price").innerHTML = 'Rs.' + matchedVariant.compare_at_price / 100;
+
+
+      // Show a message when an item is out of stock
+
+      
+      
+
+ // Media Change on Variant Change
+      let currentHeroSlider = document.querySelector(".swiper");
+      let currentThumbSlider = document.querySelector(".swiper-thumbs")
+  fetch(`${window.location.pathname}?variant=${matchedVariant.id}`).then(res => res.text()).then(text =>{
+    let parser = new DOMParser();
+    let html = parser.parseFromString(text,"text/html");
+    let heroHtml = html.querySelector(".swiper").innerHTML;
+    let thumbHtml = html.querySelector(".swiper-thumbs").innerHTML;
+    currentHeroSlider.innerHTML = heroHtml;
+    currentThumbSlider.innerHTML = thumbHtml;
+    swiper.destroy(false,false);
+  thumbs.destroy(false,false);
+ thumbs = new Swiper ('.swiper-thumbs', {
+    loop: true,
+    slidesPerView: 4,
+    slideToClickedSlide: true,
+  loop:true,
+});
+  
+ swiper = new Swiper('.swiper', {
+ slidesPerView: 1,
+    centeredSlides: true,
+    loop: true,
+    navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+    },
+   thumbs: {
+    swiper: thumbs
+  }
+});
+  }).catch(err =>{
+    console.log(err)
+  })
+
+
+// Add to cart to Sold Out when the variant is unavailable.
+    let atcButton = document.querySelector(".atc-button");
+      let form = document.querySelector("form");
+      // var paragraphOFS = document.createElement('p');
+      // paragraphOFS.classList.add("ofs-text")
+if(!matchedVariant.available){
+atcButton.value = "SOLD OUT";
+  atcButton.disabled = true;
+  atcButton.classList.add = 'Sold-Out';
+// paragraphOFS.textContent = `This item is out of stock`;
+// form.appendChild(paragraphOFS);
+}
+    else{
+      atcButton.value = "Add to cart";
+  atcButton.disabled = false;
+      // atcButton.classList.remove = 'Sold-Out';
+      // paragraphOFS.classList.add("ofs-text-remove")
+    }
+      
+      
+     document.querySelector("#product-select").value = matchedVariant.id;
+    })
+  })
+
+  
+</script>
+</body>
 </html>
