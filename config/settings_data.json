@@ -1,4 +1,10 @@
 {
   "current": {
+    "checkout_logo_position": "left",
+    "checkout_logo_size": "large",
+    "checkout_body_background_color": "#000000",
+    "content_for_index": [
+
+    ]
   }
 }
