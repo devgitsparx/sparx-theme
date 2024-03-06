@@ -4,6 +4,8 @@
     "checkout_logo_size": "large",
     "checkout_body_background_color": "#000000",
     "checkout_input_background_color_mode": "transparent",
+    "checkout_heading_font": "Playball",
+    "checkout_body_font": "Fjalla One",
     "content_for_index": [
 
     ]
